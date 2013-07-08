@@ -1,0 +1,39 @@
+name: DragonRealmsCore
+description: 'The Dragon Realms Core plugin!'
+main: com.timvisee.dragonrealmscore.DragonRealmsCore
+version: 0.1
+load: startup
+author: timvisee
+website: http://timvisee.com/
+softdepend: [PermissionsEx, PermissionsBukkit, bPermissions, Essentials, zPermissions, Vault, Permissions, TVNLib] #hack to fix trove errors
+commands:
+  profile:
+    description: Profile command
+    usage: /profile
+  register:
+    description: Register command
+    usage: /register
+  signup:
+    description: Register command
+    usage: /signup
+  texturepack:
+    description: Texturepack command
+    usage: /texturepack
+  txp:
+    description: Texturepack command
+    usage: /txp
+  votes:
+    description: Voting command
+    usage: /voting
+  vote:
+    description: Voting command
+    usage: /vote
+  voting:
+    description: Voting command
+    usage: /voting
+  website:
+    description: Website command
+    usage: /website
+  site:
+    description: Website command
+    usage: /site
