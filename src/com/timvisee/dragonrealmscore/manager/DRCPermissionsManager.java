@@ -1,13 +1,16 @@
 package com.timvisee.dragonrealmscore.manager;
 
+import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
+import com.timvisee.dragonrealmscore.DragonRealmsCore;
+import de.bananaco.bpermissions.api.ApiLayer;
+import de.bananaco.bpermissions.api.util.CalculableType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import net.milkbowl.vault.permission.Permission;
-
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.bukkit.Bukkit;
@@ -19,73 +22,36 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
-
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
-import com.timvisee.dragonrealmscore.DragonRealmsCore;
-
-import de.bananaco.bpermissions.api.ApiLayer;
-import de.bananaco.bpermissions.api.util.CalculableType;
-
-public class PermissionsManager {
+public class DRCPermissionsManager {
 	
 	private Server s;
 	private Plugin p;
 	private Logger log;
-	
-	// Current permissions system that is used
 	private PermissionsSystemType permsType = PermissionsSystemType.NONE;
-	
-	// Permissions Ex
 	private PermissionManager pexPerms;
-	
-	// Group manager essentials
 	private GroupManager groupManagerPerms;
-	
-	// Permissions (the default old permissions system by nijiko)
 	private PermissionHandler defaultPerms;
-	
-	// zPermissions
 	private ZPermissionsService zPermissionsService;
-	
-	// Vault
 	public Permission vaultPerms = null;
-	
-	/**
-	 * Constructor
-	 * @param s server
-	 * @param logPrefix log prefix (plugin name)
-	 */
-	public PermissionsManager(Server s, Plugin p, Logger log) {
+
+	public DRCPermissionsManager(Server s, Plugin p, Logger log) {
 		this.s = s;
 		this.p = p;
 		this.log = log;
 	}
-	
-	/**
-	 * Return the permissions system where the permissions manager is currently hooked into
-	 * @return permissions system type
-	 */
+
 	public PermissionsSystemType getUsedPermissionsSystemType() {
 		return this.permsType;
 	}
-	
-	/**
-	 * Check if the permissions manager is currently hooked into any of the supported permissions systems
-	 * @return false if there isn't any permissions system used
-	 */
+
 	public boolean isEnabled() {
-		return !permsType.equals(PermissionsSystemType.NONE);
+		return !this.permsType.equals(PermissionsSystemType.NONE);
 	}
-	
-	/**
-	 * Setup and hook into the permissions systems
-	 * @return the detected permissions system
-	 */
+
 	public PermissionsSystemType setup() {
 		// Define the plugin manager
 		final PluginManager pm = this.s.getPluginManager();
@@ -255,95 +221,59 @@ public class PermissionsManager {
 	    System.out.println("[" + p.getName() + "] No supported permissions system found! Permissions disabled!");
 	    
 	    return PermissionsSystemType.NONE;
-    }
-	
-	/**
-	 * Break the hook with WorldGuard
-	 */
-	public void unhook() {
-        // Break the WorldGuard hook
-        this.permsType = PermissionsSystemType.NONE;
-        
-        if(!permsType.equals(PermissionsSystemType.NONE))
-        	this.log.info("Unhooked from " + this.permsType.getName() + "!");
-        else
-        	this.log.info("Unhooked from Permissions!");
 	}
-	
-	/**
-	 * Method called when a plugin is being enabled
-	 * @param e Event instance
-	 */
+
+	public void unhook() {
+		this.permsType = PermissionsSystemType.NONE;
+
+		if (!this.permsType.equals(PermissionsSystemType.NONE))
+			this.log.info("Unhooked from " + this.permsType.getName() + "!");
+		else
+			this.log.info("Unhooked from Permissions!");
+	}
+
 	public void onPluginEnable(PluginEnableEvent e) {
 		Plugin p = e.getPlugin();
 		String pn = p.getName();
-		
-		// Is the WorldGuard plugin enabled
-		if(pn.equals("PermissionsEx") || pn.equals("PermissionsBukkit") ||
-				pn.equals("bPermissions") || pn.equals("GroupManager") ||
-				pn.equals("zPermissions") || pn.equals("Vault") ||
-				pn.equals("Permissions")) {
+
+		if ((pn.equals("PermissionsEx")) || (pn.equals("PermissionsBukkit")) ||
+				(pn.equals("bPermissions")) || (pn.equals("GroupManager")) ||
+				(pn.equals("zPermissions")) || (pn.equals("Vault")) ||
+				(pn.equals("Permissions"))) {
 			this.log.info(pn + " plugin enabled, updating hooks!");
 			setup();
 		}
 	}
-	
-	/**
-	 * Method called when a plugin is being disabled
-	 * @param e Event instance
-	 */
+
 	public void onPluginDisable(PluginDisableEvent e) {
 		Plugin p = e.getPlugin();
 		String pn = p.getName();
-		
-		// Is the WorldGuard plugin disabled
-		if(pn.equals("PermissionsEx") || pn.equals("PermissionsBukkit") ||
-				pn.equals("bPermissions") || pn.equals("GroupManager") ||
-				pn.equals("zPermissions") || pn.equals("Vault") ||
-				pn.equals("Permissions")) {
+
+		if ((pn.equals("PermissionsEx")) || (pn.equals("PermissionsBukkit")) ||
+				(pn.equals("bPermissions")) || (pn.equals("GroupManager")) ||
+				(pn.equals("zPermissions")) || (pn.equals("Vault")) ||
+				(pn.equals("Permissions"))) {
 			this.log.info(pn + " plugin disabled, updating hooks!");
 			setup();
 		}
 	}
 
-	/**
-	 * Get the logger instance
-	 * @return Logger instance
-	 */
 	public Logger getLogger() {
 		return this.log;
 	}
-	
-	/**
-	 * Set the logger instance
-	 * @param log Logger instance
-	 */
+
 	public void setLogger(Logger log) {
 		this.log = log;
 	}
-	
-	/**
-	 * Check if the player has permission. If no permissions system is used, the player has to be OP
-	 * @param p player
-	 * @param permsNode permissions node
-	 * @return true if the player is permitted
-	 */
+
 	public boolean hasPermission(Player p, String permsNode) {
 		return hasPermission(p, permsNode, p.isOp());
 	}
-	
-	/**
-	 * Check if a player has permission
-	 * @param player player
-	 * @param permissionNode permission node
-	 * @param def default if no permissions system is used
-	 * @return true if the player is permitted
-	 */
+
 	public boolean hasPermission(Player p, String permsNode, boolean def) {
-		if(!isEnabled()) {
-			// No permissions system is used, return default
+		// No permissions system is used, return default
+		if(!isEnabled())
 			return def;
-		}
 		
 		switch (this.permsType) {
 		case PERMISSIONS_EX:
@@ -391,12 +321,18 @@ public class PermissionsManager {
 		}
 	}
 
+	public String getPrimaryGroup(Player p) {
+		List<String> groups = getGroups(p);
+		if(groups.size() == 0)
+			return "";
+		return groups.get(0);
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<String> getGroups(Player p) {
-		if(!isEnabled()) {
-			// No permissions system is used, return an empty list
+		// No permissions system is used, return an empty list
+		if(!isEnabled())
 			return new ArrayList<String>();
-		}
 		
 		switch (this.permsType) {
 		case PERMISSIONS_EX:
@@ -441,8 +377,40 @@ public class PermissionsManager {
 			return new ArrayList<String>();
 		}
 	}
-	
-	public enum PermissionsSystemType {
+
+	public String getPrefix(Player p) {
+		if (!isEnabled())
+			return "";
+
+		switch (this.permsType) {
+		case PERMISSIONS_EX:
+			// Permissions Ex
+			PermissionUser user  = PermissionsEx.getUser(p);
+			return user.getPrefix();
+			
+		default:
+			// Something went wrong, return an empty list to prevent problems
+			return "";
+		}
+	}
+
+	public String getSuffix(Player p) {
+		if (!isEnabled())
+			return "";
+
+		switch (this.permsType) {
+		case PERMISSIONS_EX:
+			// Permissions Ex
+			PermissionUser user = PermissionsEx.getUser(p);
+			return user.getSuffix();
+			
+		default:
+			// Something went wrong, return an empty list to prevent problems
+			return "";
+		}
+	}
+
+	public static enum PermissionsSystemType {
 		NONE("None"),
 		PERMISSIONS_EX("Permissions Ex"),
 		PERMISSIONS_BUKKIT("Permissions Bukkit"),
@@ -451,13 +419,13 @@ public class PermissionsManager {
 		Z_PERMISSIONS("zPermissions"),
 		VAULT("Vault"),
 		PERMISSIONS("Permissions");
-		
+
 		public String name;
-		
-		PermissionsSystemType(String name) {
+
+		private PermissionsSystemType(String name) {
 			this.name = name;
 		}
-		
+
 		public String getName() {
 			return this.name;
 		}

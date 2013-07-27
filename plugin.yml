@@ -5,7 +5,8 @@ version: 0.1
 load: startup
 author: timvisee
 website: http://timvisee.com/
-softdepend: [PermissionsEx, PermissionsBukkit, bPermissions, Essentials, zPermissions, Vault, Permissions, TVNLib] #hack to fix trove errors
+depend: [ProtocolLib] #hack to fix trove errors
+softdepend: [PermissionsEx, PermissionsBukkit, bPermissions, Essentials, zPermissions, Vault, Permissions, TVNLib, Simple Showcase] #hack to fix trove errors
 commands:
   profile:
     description: Profile command
@@ -37,3 +38,9 @@ commands:
   site:
     description: Website command
     usage: /site
+  test:
+    description: Test command
+    usage: /test
+  buzz:
+    description: Buzz command
+    usage: /buzz
